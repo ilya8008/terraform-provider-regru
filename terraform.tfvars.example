@@ -1,0 +1,13 @@
+name = "test-01"
+
+size = "cloud-1"
+
+image = "ubuntu-18-04-amd64"
+
+token = "123"
+
+count = "3"
+
+ssh_name = "test"
+
+public_key = "ssh-rsa == RSA"

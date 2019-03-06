@@ -1,0 +1,5 @@
+*.tfstate*
+terraform.tfvars
+.terraform
+test
+terraform-provider-regru
