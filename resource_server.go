@@ -128,19 +128,16 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	data := Payload{name,size,image}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
-		fmt.Printf("pizdec")
 	}
 	body := bytes.NewReader(payloadBytes)
 	fmt.Println(string(payloadBytes))
 	req, err := http.NewRequest("POST", "https://api.cloudvps.reg.ru/v1/reglets", body)
 	if err != nil {
-		fmt.Printf("pizd")
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Printf("hui")
 	}
 	defer resp.Body.Close()
 	d.SetId(getserverid(token, d))
