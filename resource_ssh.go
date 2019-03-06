@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/schema"
 	"net/http"
 	"encoding/json"
 	"bytes"
