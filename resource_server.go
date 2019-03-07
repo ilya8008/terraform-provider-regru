@@ -128,16 +128,19 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	data := Payload{name,size,image}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
+		// handle err
 	}
 	body := bytes.NewReader(payloadBytes)
 	fmt.Println(string(payloadBytes))
 	req, err := http.NewRequest("POST", "https://api.cloudvps.reg.ru/v1/reglets", body)
 	if err != nil {
+		// handle err
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		// handle err
 	}
 	defer resp.Body.Close()
 	d.SetId(getserverid(token, d))
@@ -199,10 +202,7 @@ func getserverid(token string, d *schema.ResourceData) string {
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(body))
 	json.Unmarshal(body, &f)
-	//fmt.Println(f)
-	//fmt.Println(f.Reglets[0].ID)
 	for index, value := range f.Reglets {
 		fmt.Println(string(index))
 		if value.Name == d.Get("name").(string) {

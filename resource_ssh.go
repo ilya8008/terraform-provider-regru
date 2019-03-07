@@ -62,18 +62,19 @@ func resourceSSHCreate(d *schema.ResourceData, m interface{}) error {
 	data := SSHKeyInit{name,public_key}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
-
+		// handle err
 	}
 	body := bytes.NewReader(payloadBytes)
 	fmt.Println(string(payloadBytes))
 	req, err := http.NewRequest("POST", "https://api.cloudvps.reg.ru/v1/account/keys", body)
 	if err != nil {
-
+		// handle err
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		// handle err
 	}
 	defer resp.Body.Close()
 	d.SetId(getsshid(token, d))
