@@ -1,28 +1,28 @@
 package regru
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"net/http"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 
-// Type definitions for json 
+// Type definitions for json
 
 type SSHKeyInit struct {
-	Name  string `json:"name"`
-	PublicKey  string `json:"public_key"`
+	Name      string `json:"name"`
+	PublicKey string `json:"public_key"`
 }
 
 type SshKeys []struct {
-	ID  int        `json:"id"`
+	ID          int    `json:"id"`
 	Fingerprint string `json:"fingerprint"`
-	Name string  `json:"name"`
-	PublicKey  string `json:"public_key"`
+	Name        string `json:"name"`
+	PublicKey   string `json:"public_key"`
 }
 
 type SSHReply struct {
@@ -32,34 +32,34 @@ type SSHReply struct {
 var g SSHReply
 
 func resourceSSH() *schema.Resource {
-        return &schema.Resource{
-                Create: resourceSSHCreate,
-                Read:   resourceSSHRead,
-                Update: resourceSSHUpdate,
-                Delete: resourceSSHDelete,
+	return &schema.Resource{
+		Create: resourceSSHCreate,
+		Read:   resourceSSHRead,
+		Update: resourceSSHUpdate,
+		Delete: resourceSSHDelete,
 
-                Schema: map[string]*schema.Schema{
-                        "name": &schema.Schema{
-                                Type:     schema.TypeString,
-                                Required: true,
-                        },
-                        "public_key": &schema.Schema{
-                                Type:     schema.TypeString,
-                                Required: true,
-                        },
-                        "token": &schema.Schema{
-                                Type:     schema.TypeString,
-                                Required: true,
-                        },
-                },
-        }
+		Schema: map[string]*schema.Schema{
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"public_key": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"token": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+		},
+	}
 }
 
 func resourceSSHCreate(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 	public_key := d.Get("public_key").(string)
 	token := d.Get("token").(string)
-	data := SSHKeyInit{name,public_key}
+	data := SSHKeyInit{name, public_key}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
 		// handle err
@@ -83,7 +83,7 @@ func resourceSSHCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSSHRead(d *schema.ResourceData, m interface{}) error {
 	token := d.Get("token").(string)
-	res := getsshstatus(token,d)
+	res := getsshstatus(token, d)
 	if res == "" {
 		log.Printf("[WARN] No Key found: %s", d.Id())
 		d.SetId("")
@@ -102,29 +102,29 @@ func resourceSSHDelete(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		// handle err
 	}
-	req.Header.Set("Authorization", "Bearer " + d.Get("token").(string))
+	req.Header.Set("Authorization", "Bearer "+d.Get("token").(string))
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		// handle err
 	}
 	defer resp.Body.Close()
-	for ok := true; ok; ok = getsshstatus(token,d) != "" {
-		time.Sleep(100 * 1000);
-	    }
+	for ok := true; ok; ok = getsshstatus(token, d) != "" {
+		time.Sleep(100 * 1000)
+	}
 	d.SetId("")
 	return nil
 }
 
 func getsshid(token string, d *schema.ResourceData) string {
-	
+
 	var id string
 	req, err := http.NewRequest("GET", "https://api.cloudvps.reg.ru/v1/account/keys", nil)
 	if err != nil {
 		// handle err
 	}
-	req.Header.Set("Authorization", "Bearer " + token)
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -137,20 +137,20 @@ func getsshid(token string, d *schema.ResourceData) string {
 	for index, value := range g.SshKeys {
 		fmt.Println(string(index))
 		if value.Name == d.Get("name").(string) {
-			id = fmt.Sprintf("%v",value.ID)
+			id = fmt.Sprintf("%v", value.ID)
 		}
 	}
-	return(id)
+	return (id)
 }
 
 func getsshstatus(token string, d *schema.ResourceData) string {
-	
+
 	var status string
 	req, err := http.NewRequest("GET", "https://api.cloudvps.reg.ru/v1/account/keys", nil)
 	if err != nil {
 		// handle err
 	}
-	req.Header.Set("Authorization", "Bearer " + token)
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -162,9 +162,9 @@ func getsshstatus(token string, d *schema.ResourceData) string {
 	json.Unmarshal(body, &g)
 	for index, value := range g.SshKeys {
 		fmt.Println(string(index))
-		if fmt.Sprintf("%v",value.ID) == d.Id() {
-			status = fmt.Sprintf("%v",value.ID)
+		if fmt.Sprintf("%v", value.ID) == d.Id() {
+			status = fmt.Sprintf("%v", value.ID)
 		}
 	}
-	return(status)
+	return (status)
 }
