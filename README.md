@@ -3,7 +3,7 @@ Terraform provider for reg.ru cloud servers.
 
 # Binaries
 
-Download binaries from https://github.com/ilya8008/terraform-provider-regru/releases/
+Download binaries from [Releases](https://github.com/ilya8008/terraform-provider-regru/releases/)
 
 # Building from source
 
